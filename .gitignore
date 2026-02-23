@@ -1,0 +1,7 @@
+# Editor temporaries
+.sw?
+.*.sw?
+tags
+*~
+
+./pemdas-eval-gen/tryparse
