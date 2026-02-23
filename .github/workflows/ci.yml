@@ -26,6 +26,8 @@ jobs:
 
       - name: Build
         working-directory: pemdas-eval-gen
+        env:
+          GONOSUMDB: github.com/johnkerl/pgpg
         run: go build -o tryparse .
 
       - name: Test run
