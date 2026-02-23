@@ -1,0 +1,31 @@
+----------------------------------------------------------------
+ast-print/
+go get github.com/johnkerl/pgpg/lib@v0.2.0
+go get github.com/johnkerl/pgpg/generators/go@v0.2.0
+./generate.sh 
+go build
+./astprint -e 1+2
+
+----------------------------------------------------------------
+json-stream/
+go get github.com/johnkerl/pgpg/lib@v0.2.0
+go get github.com/johnkerl/pgpg/generators/go@v0.2.0
+./generate.sh 
+go build
+./jsonp 1.json
+
+----------------------------------------------------------------
+pascal-s/
+go get github.com/johnkerl/pgpg/lib@v0.2.0
+go get github.com/johnkerl/pgpg/generators/go@v0.2.0
+./generate.sh 
+go build
+574	 ./astprint -e 'program foo'
+
+----------------------------------------------------------------
+pemdas-eval-gen/
+go get github.com/johnkerl/pgpg/lib@v0.2.0
+go get github.com/johnkerl/pgpg/generators/go@v0.2.0
+./generate.sh 
+go build
+./tryparse -v -e 1+2

@@ -12,6 +12,13 @@ import (
 	"tryparse/generated/parsers"
 )
 
+type traceOptions struct {
+	tokens   bool
+	states   bool
+	stack    bool
+	printAst bool
+}
+
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s [options] [-e | -l] [file ...]\n", os.Args[0])
 	fmt.Fprintf(os.Stderr, "  -v: Print the AST parse tree.\n")
@@ -24,25 +31,38 @@ func usage() {
 }
 
 func main() {
-	var verbose bool
+	var printAst bool
 	var exprMode bool
 	var lineMode bool
 	var prompt string
-	flag.BoolVar(&verbose, "v", false, "Print AST before evaluation")
+	var traceTokens bool
+	var traceStates bool
+	var traceStack bool
+	flag.BoolVar(&printAst, "v", false, "Print AST before evaluation")
 	flag.BoolVar(&exprMode, "e", false, "Arguments are expressions to parse (at least one required)")
 	flag.BoolVar(&lineMode, "l", false, "Read stdin line-by-line, evaluate each, print result (REPL)")
 	flag.StringVar(&prompt, "p", "> ", "In -l mode with TTY stdin, prompt string (default \"> \"; use \"\" to disable)")
+	flag.BoolVar(&traceTokens, "tokens", false, "Print tokens as they're read")
+	flag.BoolVar(&traceStates, "states", false, "Show parser state transitions")
+	flag.BoolVar(&traceStack, "stack", false, "Show parser stack after each action")
 	flag.Usage = usage
 	flag.Parse()
 
 	args := flag.Args()
+
+	opts := traceOptions{
+		tokens:   traceTokens,
+		states:   traceStates,
+		stack:    traceStack,
+		printAst: printAst,
+	}
 
 	if lineMode {
 		if exprMode {
 			fmt.Fprintf(os.Stderr, "%s: -e and -l are mutually exclusive", os.Args[0])
 			os.Exit(1)
 		}
-		runREPL(verbose, prompt)
+		runREPL(opts, prompt)
 
 	} else if exprMode {
 		if len(args) == 0 {
@@ -50,7 +70,7 @@ func main() {
 			os.Exit(1)
 		}
 		for _, arg := range args {
-			if err := runParserOnce(arg, verbose); err != nil {
+			if err := runParserOnce(arg, opts); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
@@ -64,11 +84,11 @@ func main() {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
-			if err := runParserOnce(string(content), verbose); err != nil {
+			if err := runParserOnce(string(content), opts); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
-		} else if err := runParserOnFiles(args, verbose); err != nil {
+		} else if err := runParserOnFiles(args, opts); err != nil {
 
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
@@ -84,7 +104,7 @@ func stdinIsTTY() bool {
 	return (fi.Mode() & os.ModeCharDevice) != 0
 }
 
-func runREPL(verbose bool, prompt string) {
+func runREPL(opts traceOptions, prompt string) {
 	usePrompt := stdinIsTTY() && prompt != ""
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
@@ -99,7 +119,7 @@ func runREPL(verbose bool, prompt string) {
 		if line == "" {
 			continue
 		}
-		if err := runParserOnce(line, verbose); err != nil {
+		if err := runParserOnce(line, opts); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			continue
 		}
@@ -110,28 +130,29 @@ func runREPL(verbose bool, prompt string) {
 	}
 }
 
-func runParserOnFiles(filenames []string, verbose bool) error {
+func runParserOnFiles(filenames []string, opts traceOptions) error {
 	for _, filename := range filenames {
 		content, err := os.ReadFile(filename)
 		if err != nil {
 			return err
 		}
-		if err := runParserOnce(string(content), verbose); err != nil {
+		if err := runParserOnce(string(content), opts); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func runParserOnce(input string, verbose bool) error {
+func runParserOnce(input string, opts traceOptions) error {
 	lexer := lexers.NewMyLexer(input)
 	parser := parsers.NewMyParser()
+	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
 	ast, err := parser.Parse(lexer, "")
 	if err != nil {
 		return err
 	}
 
-	result, err := evaluateAST(ast, verbose)
+	result, err := evaluateAST(ast, opts.printAst)
 	if err != nil {
 		return err
 	}
