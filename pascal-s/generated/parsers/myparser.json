@@ -1,0 +1,57 @@
+{
+  "start_symbol": "Program",
+  "actions": {
+    "0": {
+      "program": {
+        "type": "shift",
+        "target": 2
+      }
+    },
+    "1": {
+      "EOF": {
+        "type": "accept"
+      }
+    },
+    "2": {
+      "identifier": {
+        "type": "shift",
+        "target": 3
+      }
+    },
+    "3": {
+      "EOF": {
+        "type": "reduce",
+        "target": 1
+      }
+    }
+  },
+  "gotos": {
+    "0": {
+      "Program": 1
+    }
+  },
+  "productions": [
+    {
+      "lhs": "__pgpg_start_1",
+      "rhs": [
+        {
+          "name": "Program",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Program",
+      "rhs": [
+        {
+          "name": "program",
+          "terminal": true
+        },
+        {
+          "name": "identifier",
+          "terminal": true
+        }
+      ]
+    }
+  ]
+}

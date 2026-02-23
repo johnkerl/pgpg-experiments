@@ -1,0 +1,83 @@
+# ================================================================
+# PASCAL-S
+
+# ================================================================
+# LEXER RULES
+
+# TODO: write up: sharp edge if this isn't first b/c first-found & it matches identifier
+program ::= "program";
+
+relational_op ::= "=" | "<>" | "<" | "<=" | ">=" | ">" ;
+adding_op ::= "+" | "-" | "or" ;
+multiplying_op ::= "*" | "/" | "div" | "mod" | "and" ;
+
+!whitespace ::= ' ' | '\t' | '\n' | '\r' ;
+_letter ::= "a"-"z" | "A"-"Z";
+_digit  ::= "0"-"9";
+
+_idchar ::= _letter | _digit | "_" | "." | "+" | "-" | "*"| "/"| "*"| "*"| "*";
+identifier ::= _idchar { _idchar };
+
+# ================================================================
+#unsigned_const ::= unsigned-number | identifier | string-literal ;
+#constant ::= unsigned_const | ["+" | "-"] identifier ;
+#IdentifierList ::= identifier {"," identifier} ;
+#VariableList ::= Variable {"," Variable} ;
+#ExpressionList ::= Expression {"," Expression} ;
+
+# ================================================================
+# PARSER RULES
+
+# ----------------------------------------------------------------
+# Program Structure
+# xxx temp
+Program ::= "program" identifier;
+#Program ::= "program" identifier "(" IdentifierList ")" ";" Block "." ;
+#Block ::= [ConstantDefPart] [TypeDefPart] [VarDefPart] [ProcDefPart] CompoundStatement ;
+
+# ----------------------------------------------------------------
+# Declarations
+#ConstantDefPart ::= "const" constant-def {constant-def} ;
+#constant-def ::= identifier "=" constant ";" ;
+#TypeDefPart ::= "type" type-def {type-def} ;
+#type-def ::= identifier "=" NewType ";" ;
+#VarDefPart ::= "var" var-def {var-def} ;
+#var-def ::= IdentifierList ":" type-denoter ";" ;
+#ProcDefPart ::= {ProcedureDecl | FunctionDecl} ;
+
+# ----------------------------------------------------------------
+# Types
+#NewType ::= SimpleType | ArrayType | RecordType ;
+#SimpleType ::= "integer" | "boolean" | "char" | "real" ;
+#ArrayType ::= "array" "[" index-range "]" "of" type-denoter ;
+#index-range ::= constant ".." constant ;
+#RecordType ::= "record" field-list "end" ;
+#field-list ::= record-section {";" record-section} ;
+#record-section ::= IdentifierList ":" type-denoter ;
+#type-denoter ::= identifier | NewType ;
+
+# ----------------------------------------------------------------
+# Procedures and Functions
+#ProcedureDecl ::= "procedure" identifier [FormalParams] ";" Block ";" ;
+#FunctionDecl ::= "function" identifier [FormalParams] ":" SimpleType ";" Block ";" ;
+#FormalParams ::= "(" FormalParamSection {";" FormalParamSection} ")" ;
+#FormalParamSection ::= ["var"] IdentifierList ":" type-denoter ;
+
+# ----------------------------------------------------------------
+# Statements
+#statement ::= [assignment-stmt | proc-stmt | CompoundStatement | IfStatement | WhileStatement | ReadStatement | WriteStatement] ;
+#assignment-stmt ::= Variable ":=" Expression ;
+#proc-stmt ::= identifier ["(" actual-param-list ")"] ;
+#CompoundStatement ::= "begin" statement {";" statement} "end" ;
+#IfStatement ::= "if" Expression "then" statement ["else" statement] ;
+#WhileStatement ::= "while" Expression "do" statement ;
+#ReadStatement ::= "read" "(" VariableList ")" ;
+#WriteStatement ::= "write" "(" Expression-list ")" ;
+
+# ----------------------------------------------------------------
+# Expressions
+#Expression ::= SimpleExpression [relational_op SimpleExpression] ;
+#SimpleExpression ::= ["+" | "-"] Term {adding-op Term} ;
+#Term ::= Factor {multiplying_op Factor} ;
+#Factor ::= identifier | unsigned_const | "(" Expression ")" | "not" Factor | Variable ;
+#Variable ::= identifier {"[" Expression "]" | "." identifier} ;
