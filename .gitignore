@@ -4,4 +4,6 @@
 tags
 *~
 
+/.cursor
+
 ./pemdas-eval-gen/tryparse
