@@ -232,6 +232,13 @@ var MyParserGotos = map[int]map[asts.NodeType]int{
 }
 
 var MyParserProductions = []MyParserProduction{
-	{lhs: asts.NodeType("__pgpg_start_1"), rhsCount: 1},
+	{lhs: asts.NodeType("__pgpg_start_3"), rhsCount: 1},
 	{lhs: asts.NodeType("Program"), rhsCount: 2},
+	{lhs: asts.NodeType("__pgpg_repeat_1"), rhsCount: 0},
+	{lhs: asts.NodeType("__pgpg_repeat_1"), rhsCount: 3},
+	{lhs: asts.NodeType("IdentifierList"), rhsCount: 2},
+	{lhs: asts.NodeType("__pgpg_repeat_2"), rhsCount: 0},
+	{lhs: asts.NodeType("__pgpg_repeat_2"), rhsCount: 2},
+	{lhs: asts.NodeType("ConstantDefPart"), rhsCount: 3},
+	{lhs: asts.NodeType("ConstantDef"), rhsCount: 4},
 }

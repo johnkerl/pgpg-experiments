@@ -32,7 +32,7 @@
   },
   "productions": [
     {
-      "lhs": "__pgpg_start_1",
+      "lhs": "__pgpg_start_3",
       "rhs": [
         {
           "name": "Program",
@@ -49,6 +49,95 @@
         },
         {
           "name": "identifier",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "__pgpg_repeat_1",
+      "rhs": []
+    },
+    {
+      "lhs": "__pgpg_repeat_1",
+      "rhs": [
+        {
+          "name": ",",
+          "terminal": true
+        },
+        {
+          "name": "identifier",
+          "terminal": true
+        },
+        {
+          "name": "__pgpg_repeat_1",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "IdentifierList",
+      "rhs": [
+        {
+          "name": "identifier",
+          "terminal": true
+        },
+        {
+          "name": "__pgpg_repeat_1",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "__pgpg_repeat_2",
+      "rhs": []
+    },
+    {
+      "lhs": "__pgpg_repeat_2",
+      "rhs": [
+        {
+          "name": "ConstantDef",
+          "terminal": false
+        },
+        {
+          "name": "__pgpg_repeat_2",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "ConstantDefPart",
+      "rhs": [
+        {
+          "name": "const",
+          "terminal": true
+        },
+        {
+          "name": "ConstantDef",
+          "terminal": false
+        },
+        {
+          "name": "__pgpg_repeat_2",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "ConstantDef",
+      "rhs": [
+        {
+          "name": "identifier",
+          "terminal": true
+        },
+        {
+          "name": "=",
+          "terminal": true
+        },
+        {
+          "name": "constant",
+          "terminal": true
+        },
+        {
+          "name": ";",
           "terminal": true
         }
       ]

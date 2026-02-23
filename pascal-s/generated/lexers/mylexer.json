@@ -53,1385 +53,1645 @@
         "next": 10
       },
       {
-        "from": 60,
-        "to": 60,
-        "next": 11
-      },
-      {
-        "from": 61,
-        "to": 61,
-        "next": 12
-      },
-      {
-        "from": 62,
-        "to": 62,
-        "next": 13
-      },
-      {
         "from": 65,
         "to": 90,
-        "next": 14
+        "next": 11
       },
       {
         "from": 95,
         "to": 95,
-        "next": 15
+        "next": 12
       },
       {
         "from": 97,
         "to": 97,
-        "next": 16
+        "next": 13
       },
       {
         "from": 98,
         "to": 99,
-        "next": 17
+        "next": 14
       },
       {
         "from": 100,
         "to": 100,
-        "next": 18
+        "next": 15
       },
       {
         "from": 101,
         "to": 108,
-        "next": 17
+        "next": 14
       },
       {
         "from": 109,
         "to": 109,
-        "next": 19
+        "next": 16
       },
       {
         "from": 110,
-        "to": 110,
-        "next": 17
-      },
-      {
-        "from": 111,
         "to": 111,
-        "next": 20
+        "next": 14
       },
       {
         "from": 112,
         "to": 112,
-        "next": 21
+        "next": 17
       },
       {
         "from": 113,
         "to": 122,
-        "next": 17
+        "next": 14
       }
     ],
     "5": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "6": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 27
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 28
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 29
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 30
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 31
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 32
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 33
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 34
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 35
       }
     ],
     "7": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 27
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 28
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 29
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 30
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 31
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 32
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 33
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 34
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 35
       }
     ],
     "8": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "9": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "10": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 36
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "11": [
       {
-        "from": 61,
-        "to": 61,
-        "next": 31
+        "from": 42,
+        "to": 42,
+        "next": 18
       },
       {
-        "from": 62,
-        "to": 62,
-        "next": 32
+        "from": 43,
+        "to": 43,
+        "next": 19
+      },
+      {
+        "from": 45,
+        "to": 45,
+        "next": 20
+      },
+      {
+        "from": 46,
+        "to": 46,
+        "next": 21
+      },
+      {
+        "from": 47,
+        "to": 47,
+        "next": 22
+      },
+      {
+        "from": 48,
+        "to": 57,
+        "next": 23
+      },
+      {
+        "from": 65,
+        "to": 90,
+        "next": 24
+      },
+      {
+        "from": 95,
+        "to": 95,
+        "next": 25
+      },
+      {
+        "from": 97,
+        "to": 122,
+        "next": 26
+      }
+    ],
+    "12": [
+      {
+        "from": 42,
+        "to": 42,
+        "next": 18
+      },
+      {
+        "from": 43,
+        "to": 43,
+        "next": 19
+      },
+      {
+        "from": 45,
+        "to": 45,
+        "next": 20
+      },
+      {
+        "from": 46,
+        "to": 46,
+        "next": 21
+      },
+      {
+        "from": 47,
+        "to": 47,
+        "next": 22
+      },
+      {
+        "from": 48,
+        "to": 57,
+        "next": 23
+      },
+      {
+        "from": 65,
+        "to": 90,
+        "next": 24
+      },
+      {
+        "from": 95,
+        "to": 95,
+        "next": 25
+      },
+      {
+        "from": 97,
+        "to": 122,
+        "next": 26
       }
     ],
     "13": [
       {
-        "from": 61,
-        "to": 61,
-        "next": 33
+        "from": 42,
+        "to": 42,
+        "next": 18
+      },
+      {
+        "from": 43,
+        "to": 43,
+        "next": 19
+      },
+      {
+        "from": 45,
+        "to": 45,
+        "next": 20
+      },
+      {
+        "from": 46,
+        "to": 46,
+        "next": 21
+      },
+      {
+        "from": 47,
+        "to": 47,
+        "next": 22
+      },
+      {
+        "from": 48,
+        "to": 57,
+        "next": 23
+      },
+      {
+        "from": 65,
+        "to": 90,
+        "next": 24
+      },
+      {
+        "from": 95,
+        "to": 95,
+        "next": 25
+      },
+      {
+        "from": 97,
+        "to": 109,
+        "next": 26
+      },
+      {
+        "from": 110,
+        "to": 110,
+        "next": 37
+      },
+      {
+        "from": 111,
+        "to": 122,
+        "next": 26
       }
     ],
     "14": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "15": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
+        "to": 104,
+        "next": 26
+      },
+      {
+        "from": 105,
+        "to": 105,
+        "next": 38
+      },
+      {
+        "from": 106,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "16": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
-        "to": 109,
-        "next": 30
-      },
-      {
-        "from": 110,
         "to": 110,
-        "next": 34
+        "next": 26
       },
       {
         "from": 111,
+        "to": 111,
+        "next": 39
+      },
+      {
+        "from": 112,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "17": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
+        "to": 113,
+        "next": 26
+      },
+      {
+        "from": 114,
+        "to": 114,
+        "next": 40
+      },
+      {
+        "from": 115,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "18": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
-        "to": 104,
-        "next": 30
-      },
-      {
-        "from": 105,
-        "to": 105,
-        "next": 35
-      },
-      {
-        "from": 106,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "19": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
-        "to": 110,
-        "next": 30
-      },
-      {
-        "from": 111,
-        "to": 111,
-        "next": 36
-      },
-      {
-        "from": 112,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "20": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
-        "to": 113,
-        "next": 30
-      },
-      {
-        "from": 114,
-        "to": 114,
-        "next": 37
-      },
-      {
-        "from": 115,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "21": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
-        "to": 113,
-        "next": 30
-      },
-      {
-        "from": 114,
-        "to": 114,
-        "next": 38
-      },
-      {
-        "from": 115,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "22": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "23": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "24": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "25": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "26": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "27": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "28": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "29": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "30": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
+      }
+    ],
+    "31": [
+      {
+        "from": 42,
+        "to": 42,
+        "next": 18
+      },
+      {
+        "from": 43,
+        "to": 43,
+        "next": 19
+      },
+      {
+        "from": 45,
+        "to": 45,
+        "next": 20
+      },
+      {
+        "from": 46,
+        "to": 46,
+        "next": 21
+      },
+      {
+        "from": 47,
+        "to": 47,
+        "next": 22
+      },
+      {
+        "from": 48,
+        "to": 57,
+        "next": 23
+      },
+      {
+        "from": 65,
+        "to": 90,
+        "next": 24
+      },
+      {
+        "from": 95,
+        "to": 95,
+        "next": 25
+      },
+      {
+        "from": 97,
+        "to": 122,
+        "next": 26
+      }
+    ],
+    "32": [
+      {
+        "from": 42,
+        "to": 42,
+        "next": 18
+      },
+      {
+        "from": 43,
+        "to": 43,
+        "next": 19
+      },
+      {
+        "from": 45,
+        "to": 45,
+        "next": 20
+      },
+      {
+        "from": 46,
+        "to": 46,
+        "next": 21
+      },
+      {
+        "from": 47,
+        "to": 47,
+        "next": 22
+      },
+      {
+        "from": 48,
+        "to": 57,
+        "next": 23
+      },
+      {
+        "from": 65,
+        "to": 90,
+        "next": 24
+      },
+      {
+        "from": 95,
+        "to": 95,
+        "next": 25
+      },
+      {
+        "from": 97,
+        "to": 122,
+        "next": 26
+      }
+    ],
+    "33": [
+      {
+        "from": 42,
+        "to": 42,
+        "next": 18
+      },
+      {
+        "from": 43,
+        "to": 43,
+        "next": 19
+      },
+      {
+        "from": 45,
+        "to": 45,
+        "next": 20
+      },
+      {
+        "from": 46,
+        "to": 46,
+        "next": 21
+      },
+      {
+        "from": 47,
+        "to": 47,
+        "next": 22
+      },
+      {
+        "from": 48,
+        "to": 57,
+        "next": 23
+      },
+      {
+        "from": 65,
+        "to": 90,
+        "next": 24
+      },
+      {
+        "from": 95,
+        "to": 95,
+        "next": 25
+      },
+      {
+        "from": 97,
+        "to": 122,
+        "next": 26
       }
     ],
     "34": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
-        "to": 99,
-        "next": 30
-      },
-      {
-        "from": 100,
-        "to": 100,
-        "next": 39
-      },
-      {
-        "from": 101,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "35": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
-        "to": 117,
-        "next": 30
-      },
-      {
-        "from": 118,
-        "to": 118,
-        "next": 40
-      },
-      {
-        "from": 119,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "36": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 36
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
+      },
+      {
+        "from": 97,
+        "to": 122,
+        "next": 26
+      }
+    ],
+    "37": [
+      {
+        "from": 42,
+        "to": 42,
+        "next": 18
+      },
+      {
+        "from": 43,
+        "to": 43,
+        "next": 19
+      },
+      {
+        "from": 45,
+        "to": 45,
+        "next": 20
+      },
+      {
+        "from": 46,
+        "to": 46,
+        "next": 21
+      },
+      {
+        "from": 47,
+        "to": 47,
+        "next": 22
+      },
+      {
+        "from": 48,
+        "to": 57,
+        "next": 23
+      },
+      {
+        "from": 65,
+        "to": 90,
+        "next": 24
+      },
+      {
+        "from": 95,
+        "to": 95,
+        "next": 25
       },
       {
         "from": 97,
         "to": 99,
-        "next": 30
+        "next": 26
       },
       {
         "from": 100,
@@ -1441,522 +1701,589 @@
       {
         "from": 101,
         "to": 122,
-        "next": 30
-      }
-    ],
-    "37": [
-      {
-        "from": 42,
-        "to": 42,
-        "next": 22
-      },
-      {
-        "from": 43,
-        "to": 43,
-        "next": 23
-      },
-      {
-        "from": 45,
-        "to": 45,
-        "next": 24
-      },
-      {
-        "from": 46,
-        "to": 46,
-        "next": 25
-      },
-      {
-        "from": 47,
-        "to": 47,
         "next": 26
-      },
-      {
-        "from": 48,
-        "to": 57,
-        "next": 27
-      },
-      {
-        "from": 65,
-        "to": 90,
-        "next": 28
-      },
-      {
-        "from": 95,
-        "to": 95,
-        "next": 29
-      },
-      {
-        "from": 97,
-        "to": 122,
-        "next": 30
       }
     ],
     "38": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
-        "to": 110,
-        "next": 30
+        "to": 117,
+        "next": 26
       },
       {
-        "from": 111,
-        "to": 111,
+        "from": 118,
+        "to": 118,
         "next": 42
       },
       {
-        "from": 112,
+        "from": 119,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "39": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
+        "to": 99,
+        "next": 26
+      },
+      {
+        "from": 100,
+        "to": 100,
+        "next": 43
+      },
+      {
+        "from": 101,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "40": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
+        "to": 110,
+        "next": 26
+      },
+      {
+        "from": 111,
+        "to": 111,
+        "next": 44
+      },
+      {
+        "from": 112,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "41": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "42": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
-        "to": 102,
-        "next": 30
-      },
-      {
-        "from": 103,
-        "to": 103,
-        "next": 43
-      },
-      {
-        "from": 104,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "43": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
-        "to": 113,
-        "next": 30
-      },
-      {
-        "from": 114,
-        "to": 114,
-        "next": 44
-      },
-      {
-        "from": 115,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "44": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
-        "to": 97,
+        "to": 102,
+        "next": 26
+      },
+      {
+        "from": 103,
+        "to": 103,
         "next": 45
       },
       {
-        "from": 98,
+        "from": 104,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "45": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
       },
       {
         "from": 97,
-        "to": 108,
-        "next": 30
+        "to": 113,
+        "next": 26
       },
       {
-        "from": 109,
-        "to": 109,
+        "from": 114,
+        "to": 114,
         "next": 46
       },
       {
-        "from": 110,
+        "from": 115,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ],
     "46": [
       {
         "from": 42,
         "to": 42,
-        "next": 22
+        "next": 18
       },
       {
         "from": 43,
         "to": 43,
-        "next": 23
+        "next": 19
       },
       {
         "from": 45,
         "to": 45,
-        "next": 24
+        "next": 20
       },
       {
         "from": 46,
         "to": 46,
-        "next": 25
+        "next": 21
       },
       {
         "from": 47,
         "to": 47,
-        "next": 26
+        "next": 22
       },
       {
         "from": 48,
         "to": 57,
-        "next": 27
+        "next": 23
       },
       {
         "from": 65,
         "to": 90,
-        "next": 28
+        "next": 24
       },
       {
         "from": 95,
         "to": 95,
-        "next": 29
+        "next": 25
+      },
+      {
+        "from": 97,
+        "to": 97,
+        "next": 47
+      },
+      {
+        "from": 98,
+        "to": 122,
+        "next": 26
+      }
+    ],
+    "47": [
+      {
+        "from": 42,
+        "to": 42,
+        "next": 18
+      },
+      {
+        "from": 43,
+        "to": 43,
+        "next": 19
+      },
+      {
+        "from": 45,
+        "to": 45,
+        "next": 20
+      },
+      {
+        "from": 46,
+        "to": 46,
+        "next": 21
+      },
+      {
+        "from": 47,
+        "to": 47,
+        "next": 22
+      },
+      {
+        "from": 48,
+        "to": 57,
+        "next": 23
+      },
+      {
+        "from": 65,
+        "to": 90,
+        "next": 24
+      },
+      {
+        "from": 95,
+        "to": 95,
+        "next": 25
+      },
+      {
+        "from": 97,
+        "to": 108,
+        "next": 26
+      },
+      {
+        "from": 109,
+        "to": 109,
+        "next": 48
+      },
+      {
+        "from": 110,
+        "to": 122,
+        "next": 26
+      }
+    ],
+    "48": [
+      {
+        "from": 42,
+        "to": 42,
+        "next": 18
+      },
+      {
+        "from": 43,
+        "to": 43,
+        "next": 19
+      },
+      {
+        "from": 45,
+        "to": 45,
+        "next": 20
+      },
+      {
+        "from": 46,
+        "to": 46,
+        "next": 21
+      },
+      {
+        "from": 47,
+        "to": 47,
+        "next": 22
+      },
+      {
+        "from": 48,
+        "to": 57,
+        "next": 23
+      },
+      {
+        "from": 65,
+        "to": 90,
+        "next": 24
+      },
+      {
+        "from": 95,
+        "to": 95,
+        "next": 25
       },
       {
         "from": 97,
         "to": 122,
-        "next": 30
+        "next": 26
       }
     ]
   },
@@ -1966,14 +2293,14 @@
     "3": "!whitespace",
     "4": "!whitespace",
     "5": "multiplying_op",
-    "6": "adding_op",
-    "7": "adding_op",
+    "6": "identifier",
+    "7": "identifier",
     "8": "identifier",
     "9": "multiplying_op",
     "10": "identifier",
-    "11": "relational_op",
-    "12": "relational_op",
-    "13": "relational_op",
+    "11": "identifier",
+    "12": "identifier",
+    "13": "identifier",
     "14": "identifier",
     "15": "identifier",
     "16": "identifier",
@@ -1991,32 +2318,35 @@
     "28": "identifier",
     "29": "identifier",
     "30": "identifier",
-    "31": "relational_op",
-    "32": "relational_op",
-    "33": "relational_op",
+    "31": "identifier",
+    "32": "identifier",
+    "33": "identifier",
     "34": "identifier",
     "35": "identifier",
     "36": "identifier",
-    "37": "adding_op",
+    "37": "identifier",
     "38": "identifier",
-    "39": "multiplying_op",
-    "40": "multiplying_op",
+    "39": "identifier",
+    "40": "identifier",
     "41": "multiplying_op",
-    "42": "identifier",
-    "43": "identifier",
+    "42": "multiplying_op",
+    "43": "multiplying_op",
     "44": "identifier",
     "45": "identifier",
-    "46": "program"
+    "46": "identifier",
+    "47": "identifier",
+    "48": "program"
   },
   "rules": {
     "!whitespace": "(\" \" | \"\\t\" | \"\\n\" | \"\\r\")",
     "_digit": "'0'-'9'",
     "_idchar": "(('a'-'z' | 'A'-'Z') | '0'-'9' | \"_\" | \".\" | \"+\" | \"-\" | \"*\" | \"/\" | \"*\" | \"*\" | \"*\")",
     "_letter": "('a'-'z' | 'A'-'Z')",
-    "adding_op": "(\"+\" | \"-\" | \"or\")",
+    "constant": "('0'-'9' ('0'-'9')* | ((\"+\" | \"-\"))? (('a'-'z' | 'A'-'Z') | '0'-'9' | \"_\" | \".\" | \"+\" | \"-\" | \"*\" | \"/\" | \"*\" | \"*\" | \"*\") ((('a'-'z' | 'A'-'Z') | '0'-'9' | \"_\" | \".\" | \"+\" | \"-\" | \"*\" | \"/\" | \"*\" | \"*\" | \"*\"))*)",
     "identifier": "(('a'-'z' | 'A'-'Z') | '0'-'9' | \"_\" | \".\" | \"+\" | \"-\" | \"*\" | \"/\" | \"*\" | \"*\" | \"*\") ((('a'-'z' | 'A'-'Z') | '0'-'9' | \"_\" | \".\" | \"+\" | \"-\" | \"*\" | \"/\" | \"*\" | \"*\" | \"*\"))*",
     "multiplying_op": "(\"*\" | \"/\" | \"div\" | \"mod\" | \"and\")",
     "program": "\"program\"",
-    "relational_op": "(\"=\" | \"\u003c\u003e\" | \"\u003c\" | \"\u003c=\" | \"\u003e=\" | \"\u003e\")"
+    "unsigned_const": "'0'-'9' ('0'-'9')*",
+    "unsigned_number": "'0'-'9' ('0'-'9')*"
   }
 }
