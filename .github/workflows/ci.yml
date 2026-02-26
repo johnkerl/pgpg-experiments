@@ -25,16 +25,18 @@ jobs:
           go-version: "1.25"
 
       - name: Build
-        working-directory: pemdas-eval-gen
         env:
           GONOSUMDB: github.com/johnkerl/pgpg
-        run: go build -o tryparse .
+        run: |
+          go build -o ast-print/ast-print ./ast-print
+          go build -o json-stream/json-stream ./json-stream
+          go build -o pascal-s/pascal-s ./pascal-s
+          go build -o pemdas-eval-gen/tryparse ./pemdas-eval-gen
 
       - name: Test run
-        working-directory: pemdas-eval-gen
         run: |
-          ./tryparse -e '1+2'
-          ./tryparse -v -e '1+2'
+          ./pemdas-eval-gen/tryparse -e '1+2'
+          ./pemdas-eval-gen/tryparse -v -e '1+2'
 
   format-advisory:
     name: Format check (advisory)
@@ -53,7 +55,7 @@ jobs:
         id: go-fmt
         run: |
           set +e
-          OUT=$(gofmt -l pemdas-eval-gen 2>/dev/null | grep -v '^$')
+          OUT=$(gofmt -l ast-print json-stream pascal-s pemdas-eval-gen 2>/dev/null | grep -v '^$')
           if [ -n "$OUT" ]; then
             echo "needs_format=1" >> "$GITHUB_OUTPUT"
             echo "go_files<<EOF" >> "$GITHUB_OUTPUT"
@@ -77,7 +79,7 @@ jobs:
 
             **To fix from the repo root:**
             \`\`\`bash
-            gofmt -w pemdas-eval-gen
+            gofmt -w ast-print json-stream pascal-s pemdas-eval-gen
             \`\`\`
             Then commit the changes.`;
             await github.rest.issues.createComment({
@@ -90,5 +92,5 @@ jobs:
       - name: Emit warning for format (Actions summary)
         if: steps.go-fmt.outputs.needs_format == '1'
         run: |
-          echo "::warning::Code needs reformatting. From repo root run: gofmt -w pemdas-eval-gen"
+          echo "::warning::Code needs reformatting. From repo root run: gofmt -w ast-print json-stream pascal-s pemdas-eval-gen"
           echo "This is advisory only and does not fail the workflow."
