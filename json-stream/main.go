@@ -11,9 +11,9 @@ import (
 )
 
 type traceOptions struct {
-	tokens  bool
-	states  bool
-	stack   bool
+	tokens   bool
+	states   bool
+	stack    bool
 	printAst bool
 }
 
@@ -43,9 +43,9 @@ func main() {
 	args := flag.Args()
 
 	opts := traceOptions{
-		tokens:  traceTokens,
-		states:  traceStates,
-		stack:   traceStack,
+		tokens:   traceTokens,
+		states:   traceStates,
+		stack:    traceStack,
 		printAst: printAst,
 	}
 
@@ -105,7 +105,7 @@ func runParserOnFiles(filenames []string, opts traceOptions) error {
 func runParserOnce(input string, opts traceOptions) error {
 	lexer := lexers.NewMyLexer(input)
 	parser := parsers.NewMyParser()
-		parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
+	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
 	ast, err := parser.Parse(lexer, "")
 	if err != nil {
 		return err
