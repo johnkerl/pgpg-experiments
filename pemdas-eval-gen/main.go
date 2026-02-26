@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"tryparse/generated/lexers"
-	"tryparse/generated/parsers"
+	"github.com/johnkerl/pgpg-experiments/pemdas-eval-gen/generated/lexers"
+	"github.com/johnkerl/pgpg-experiments/pemdas-eval-gen/generated/parsers"
 )
 
 type traceOptions struct {
@@ -66,7 +66,7 @@ func main() {
 
 	} else if exprMode {
 		if len(args) == 0 {
-			fmt.Fprintln(os.Stderr, "%s: -e requires at least one argument", os.Args[0])
+			fmt.Fprintf(os.Stderr, "%s: -e requires at least one argument\n", os.Args[0])
 			os.Exit(1)
 		}
 		for _, arg := range args {

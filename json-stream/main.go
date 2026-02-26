@@ -6,8 +6,8 @@ import (
 	"io"
 	"os"
 
-	"jsonp/generated/lexers"
-	"jsonp/generated/parsers"
+	"github.com/johnkerl/pgpg-experiments/json-stream/generated/lexers"
+	"github.com/johnkerl/pgpg-experiments/json-stream/generated/parsers"
 )
 
 type traceOptions struct {
@@ -51,7 +51,7 @@ func main() {
 
 	if exprMode {
 		if len(args) == 0 {
-			fmt.Fprintln(os.Stderr, "%s: -e requires at least one argument", os.Args[0])
+			fmt.Fprintf(os.Stderr, "%s: -e requires at least one argument\n", os.Args[0])
 			os.Exit(1)
 		}
 		for _, arg := range args {

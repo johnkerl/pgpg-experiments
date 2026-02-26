@@ -5,7 +5,7 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
+	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
 )
 
 // evaluateAST walks the AST and returns the result.
