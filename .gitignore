@@ -1,3 +1,7 @@
+# Local workspace for co-developing with pgpg (do not check in)
+go.work
+go.work.sum
+
 # Editor temporaries
 .sw?
 .*.sw?
