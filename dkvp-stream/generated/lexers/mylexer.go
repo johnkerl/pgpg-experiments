@@ -133,9 +133,6 @@ func (lexer *MyLexer) Scan() *tokens.Token {
 		lexer.buf = lexer.buf[lastAcceptOffset:]
 		lexer.tokenStart = 0
 		tokenType := MyLexerActions[lastAcceptState]
-		if MyLexerIsIgnoredToken(tokenType) {
-			continue
-		}
 		return tokens.NewToken(lexeme, tokenType, &startLocation)
 	}
 }
@@ -155,9 +152,6 @@ func MyLexerLookupTransition(state int, r rune) (int, bool) {
 	}
 	return 0, false
 }
-func MyLexerIsIgnoredToken(tokenType tokens.TokenType) bool {
-	return strings.HasPrefix(string(tokenType), "!")
-}
 
 const MyLexerStartState = 0
 
@@ -169,298 +163,51 @@ type MyLexerRangeTransition struct {
 
 var MyLexerTransitions = map[int][]MyLexerRangeTransition{
 	0: {
-		{from: '\t', to: '\t', next: 1},
-		{from: '\n', to: '\n', next: 2},
-		{from: '\r', to: '\r', next: 3},
-		{from: ' ', to: ' ', next: 4},
-		{from: '"', to: '"', next: 5},
-		{from: ',', to: ',', next: 6},
-		{from: '-', to: '-', next: 7},
-		{from: '0', to: '0', next: 8},
-		{from: '1', to: '9', next: 9},
-		{from: ':', to: ':', next: 10},
-		{from: '[', to: '[', next: 11},
-		{from: ']', to: ']', next: 12},
-		{from: 'f', to: 'f', next: 13},
-		{from: 'n', to: 'n', next: 14},
-		{from: 't', to: 't', next: 15},
-		{from: '{', to: '{', next: 16},
-		{from: '}', to: '}', next: 17},
+		{from: '\x00', to: '+', next: 1},
+		{from: ',', to: ',', next: 2},
+		{from: '-', to: '<', next: 3},
+		{from: '=', to: '=', next: 4},
+		{from: '>', to: '\uffff', next: 5},
+	},
+	1: {
+		{from: '\x00', to: '+', next: 6},
+		{from: '-', to: '<', next: 7},
+		{from: '>', to: '\uffff', next: 8},
+	},
+	3: {
+		{from: '\x00', to: '+', next: 6},
+		{from: '-', to: '<', next: 7},
+		{from: '>', to: '\uffff', next: 8},
 	},
 	5: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
+		{from: '\x00', to: '+', next: 6},
+		{from: '-', to: '<', next: 7},
+		{from: '>', to: '\uffff', next: 8},
+	},
+	6: {
+		{from: '\x00', to: '+', next: 6},
+		{from: '-', to: '<', next: 7},
+		{from: '>', to: '\uffff', next: 8},
 	},
 	7: {
-		{from: '0', to: '0', next: 8},
-		{from: '1', to: '9', next: 9},
+		{from: '\x00', to: '+', next: 6},
+		{from: '-', to: '<', next: 7},
+		{from: '>', to: '\uffff', next: 8},
 	},
 	8: {
-		{from: '.', to: '.', next: 23},
-		{from: 'E', to: 'E', next: 24},
-		{from: 'e', to: 'e', next: 25},
-	},
-	9: {
-		{from: '.', to: '.', next: 23},
-		{from: '0', to: '9', next: 26},
-		{from: 'E', to: 'E', next: 24},
-		{from: 'e', to: 'e', next: 25},
-	},
-	13: {
-		{from: 'a', to: 'a', next: 27},
-	},
-	14: {
-		{from: 'u', to: 'u', next: 28},
-	},
-	15: {
-		{from: 'r', to: 'r', next: 29},
-	},
-	18: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
-	},
-	20: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
-	},
-	21: {
-		{from: '"', to: '"', next: 30},
-		{from: '/', to: '/', next: 31},
-		{from: '\\', to: '\\', next: 32},
-		{from: 'b', to: 'b', next: 33},
-		{from: 'f', to: 'f', next: 34},
-		{from: 'n', to: 'n', next: 35},
-		{from: 'r', to: 'r', next: 36},
-		{from: 't', to: 't', next: 37},
-		{from: 'u', to: 'u', next: 38},
-	},
-	22: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
-	},
-	23: {
-		{from: '0', to: '9', next: 39},
-	},
-	24: {
-		{from: '+', to: '+', next: 40},
-		{from: '-', to: '-', next: 41},
-		{from: '0', to: '9', next: 42},
-	},
-	25: {
-		{from: '+', to: '+', next: 40},
-		{from: '-', to: '-', next: 41},
-		{from: '0', to: '9', next: 42},
-	},
-	26: {
-		{from: '.', to: '.', next: 23},
-		{from: '0', to: '9', next: 26},
-		{from: 'E', to: 'E', next: 24},
-		{from: 'e', to: 'e', next: 25},
-	},
-	27: {
-		{from: 'l', to: 'l', next: 43},
-	},
-	28: {
-		{from: 'l', to: 'l', next: 44},
-	},
-	29: {
-		{from: 'u', to: 'u', next: 45},
-	},
-	30: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
-	},
-	31: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
-	},
-	32: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
-	},
-	33: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
-	},
-	34: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
-	},
-	35: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
-	},
-	36: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
-	},
-	37: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
-	},
-	38: {
-		{from: '0', to: '9', next: 46},
-		{from: 'A', to: 'F', next: 47},
-		{from: 'a', to: 'f', next: 48},
-	},
-	39: {
-		{from: '0', to: '9', next: 49},
-		{from: 'E', to: 'E', next: 24},
-		{from: 'e', to: 'e', next: 25},
-	},
-	40: {
-		{from: '0', to: '9', next: 42},
-	},
-	41: {
-		{from: '0', to: '9', next: 42},
-	},
-	42: {
-		{from: '0', to: '9', next: 50},
-	},
-	43: {
-		{from: 's', to: 's', next: 51},
-	},
-	44: {
-		{from: 'l', to: 'l', next: 52},
-	},
-	45: {
-		{from: 'e', to: 'e', next: 53},
-	},
-	46: {
-		{from: '0', to: '9', next: 54},
-		{from: 'A', to: 'F', next: 55},
-		{from: 'a', to: 'f', next: 56},
-	},
-	47: {
-		{from: '0', to: '9', next: 54},
-		{from: 'A', to: 'F', next: 55},
-		{from: 'a', to: 'f', next: 56},
-	},
-	48: {
-		{from: '0', to: '9', next: 54},
-		{from: 'A', to: 'F', next: 55},
-		{from: 'a', to: 'f', next: 56},
-	},
-	49: {
-		{from: '0', to: '9', next: 49},
-		{from: 'E', to: 'E', next: 24},
-		{from: 'e', to: 'e', next: 25},
-	},
-	50: {
-		{from: '0', to: '9', next: 50},
-	},
-	51: {
-		{from: 'e', to: 'e', next: 57},
-	},
-	54: {
-		{from: '0', to: '9', next: 58},
-		{from: 'A', to: 'F', next: 59},
-		{from: 'a', to: 'f', next: 60},
-	},
-	55: {
-		{from: '0', to: '9', next: 58},
-		{from: 'A', to: 'F', next: 59},
-		{from: 'a', to: 'f', next: 60},
-	},
-	56: {
-		{from: '0', to: '9', next: 58},
-		{from: 'A', to: 'F', next: 59},
-		{from: 'a', to: 'f', next: 60},
-	},
-	58: {
-		{from: '0', to: '9', next: 61},
-		{from: 'A', to: 'F', next: 62},
-		{from: 'a', to: 'f', next: 63},
-	},
-	59: {
-		{from: '0', to: '9', next: 61},
-		{from: 'A', to: 'F', next: 62},
-		{from: 'a', to: 'f', next: 63},
-	},
-	60: {
-		{from: '0', to: '9', next: 61},
-		{from: 'A', to: 'F', next: 62},
-		{from: 'a', to: 'f', next: 63},
-	},
-	61: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
-	},
-	62: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
-	},
-	63: {
-		{from: ' ', to: '!', next: 18},
-		{from: '"', to: '"', next: 19},
-		{from: '#', to: '[', next: 20},
-		{from: '\\', to: '\\', next: 21},
-		{from: ']', to: '\uffff', next: 22},
+		{from: '\x00', to: '+', next: 6},
+		{from: '-', to: '<', next: 7},
+		{from: '>', to: '\uffff', next: 8},
 	},
 }
 
 var MyLexerActions = map[int]tokens.TokenType{
-	1:  "!whitespace",
-	2:  "!whitespace",
-	3:  "!whitespace",
-	4:  "!whitespace",
-	6:  "comma",
-	8:  "number",
-	9:  "number",
-	10: "colon",
-	11: "lbracket",
-	12: "rbracket",
-	16: "lcurly",
-	17: "rcurly",
-	19: "string",
-	26: "number",
-	39: "number",
-	42: "number",
-	49: "number",
-	50: "number",
-	52: "null",
-	53: "true",
-	57: "false",
+	1: "text",
+	2: "comma",
+	3: "text",
+	4: "equals",
+	5: "text",
+	6: "text",
+	7: "text",
+	8: "text",
 }
