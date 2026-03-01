@@ -11,7 +11,8 @@ import (
 )
 
 type MyParser struct {
-	Trace *MyParserTraceHooks
+	Trace            *MyParserTraceHooks
+	stashedLookahead *tokens.Token
 }
 
 type MyParserTraceHooks struct {
@@ -200,8 +201,211 @@ func (parser *MyParser) Parse(lexer liblexers.AbstractLexer, astMode string) (*a
 				return nil, nil
 			}
 			return asts.NewAST(nodeStack[0]), nil
+		case MyParserActionAcceptAndYield:
+			return nil, fmt.Errorf("parse error: multiple objects; use ParseOne for multi-object input")
 		default:
 			return nil, fmt.Errorf("parse error: no action")
+		}
+	}
+}
+
+// ParseOne parses one record from the lexer. It is for multi-object input: call in a loop until done.
+// Returns (ast, true, nil) on EOF after a record, (ast, false, nil) when more input follows, or (nil, false, err) on error.
+func (parser *MyParser) ParseOne(lexer liblexers.AbstractLexer, astMode string) (*asts.AST, bool, error) {
+	if lexer == nil {
+		return nil, false, fmt.Errorf("parser: nil lexer")
+	}
+	stateStack := []int{0}
+	nodeStack := []*asts.ASTNode{}
+	var lookahead *tokens.Token
+	if parser.stashedLookahead != nil {
+		lookahead = parser.stashedLookahead
+		parser.stashedLookahead = nil
+	} else {
+		lookahead = lexer.Scan()
+	}
+	if parser.Trace != nil && parser.Trace.OnToken != nil {
+		parser.Trace.OnToken(lookahead)
+	}
+	for {
+		if lookahead == nil {
+			return nil, false, fmt.Errorf("parser: lexer returned nil token")
+		}
+		if lookahead.Type == tokens.TokenTypeError {
+			return nil, false, fmt.Errorf("lexer error: %s", string(lookahead.Lexeme))
+		}
+		state := stateStack[len(stateStack)-1]
+		action, ok := MyParserActions[state][lookahead.Type]
+		if !ok {
+			return nil, false, fmt.Errorf("parse error: unexpected %s (%q)", lookahead.Type, string(lookahead.Lexeme))
+		}
+		if parser.Trace != nil && parser.Trace.OnAction != nil {
+			parser.Trace.OnAction(state, action, lookahead)
+		}
+		switch action.Kind {
+		case MyParserActionShift:
+			if astMode == "noast" {
+				nodeStack = append(nodeStack, MyParserNoASTSentinel)
+			} else {
+				nodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))
+			}
+			stateStack = append(stateStack, action.Target)
+			lookahead = lexer.Scan()
+			if parser.Trace != nil && parser.Trace.OnToken != nil {
+				parser.Trace.OnToken(lookahead)
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+		case MyParserActionReduce:
+			prod := MyParserProductions[action.Target]
+			rhsNodes := make([]*asts.ASTNode, prod.rhsCount)
+			for i := prod.rhsCount - 1; i >= 0; i-- {
+				stateStack = stateStack[:len(stateStack)-1]
+				rhsNodes[i] = nodeStack[len(nodeStack)-1]
+				nodeStack = nodeStack[:len(nodeStack)-1]
+			}
+			if astMode == "noast" {
+				nodeStack = append(nodeStack, MyParserNoASTSentinel)
+			} else {
+				var node *asts.ASTNode
+				useFullTree := (astMode == "fullast")
+				if !useFullTree && prod.hasPassthrough {
+					node = rhsNodes[prod.passthroughIndex]
+				} else if !useFullTree && prod.hasWithAppendedChildren {
+					var parent *asts.ASTNode
+					var parentToken *tokens.Token
+					var parentType asts.NodeType
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+						parentType = asts.NodeType(prod.parentLiteral)
+						parent = nil
+					} else {
+						parent = rhsNodes[prod.parentIndex]
+						parentToken = parent.Token
+						parentType = parent.Type
+					}
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = parentType
+					}
+					newChildren := make([]*asts.ASTNode, 0)
+					if parent != nil && parent.Children != nil {
+						newChildren = append(newChildren, parent.Children...)
+					}
+					for _, ci := range prod.withAppendedChildren {
+						newChildren = append(newChildren, rhsNodes[ci])
+					}
+					node = asts.NewASTNode(parentToken, nodeType, newChildren)
+				} else if !useFullTree && prod.hasWithPrependedChildren {
+					var parent *asts.ASTNode
+					var parentToken *tokens.Token
+					var parentType asts.NodeType
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+						parentType = asts.NodeType(prod.parentLiteral)
+						parent = nil
+					} else {
+						parent = rhsNodes[prod.parentIndex]
+						parentToken = parent.Token
+						parentType = parent.Type
+					}
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = parentType
+					}
+					newChildren := make([]*asts.ASTNode, 0)
+					for _, ci := range prod.withPrependedChildren {
+						newChildren = append(newChildren, rhsNodes[ci])
+					}
+					if parent != nil && parent.Children != nil {
+						newChildren = append(newChildren, parent.Children...)
+					}
+					node = asts.NewASTNode(parentToken, nodeType, newChildren)
+				} else if !useFullTree && prod.hasWithAdoptedGrandchildren {
+					var parent *asts.ASTNode
+					var parentToken *tokens.Token
+					var parentType asts.NodeType
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+						parentType = asts.NodeType(prod.parentLiteral)
+						parent = nil
+					} else {
+						parent = rhsNodes[prod.parentIndex]
+						parentToken = parent.Token
+						parentType = parent.Type
+					}
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = parentType
+					}
+					newChildren := make([]*asts.ASTNode, 0)
+					for _, ci := range prod.withAdoptedGrandchildren {
+						childNode := rhsNodes[ci]
+						if childNode != nil && childNode.Children != nil {
+							newChildren = append(newChildren, childNode.Children...)
+						}
+					}
+					node = asts.NewASTNode(parentToken, nodeType, newChildren)
+				} else if !useFullTree && prod.hasHint {
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = prod.lhs
+					}
+					var parentToken *tokens.Token
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+					} else if prod.parentIndex >= 0 && prod.parentIndex < len(rhsNodes) {
+						parentToken = rhsNodes[prod.parentIndex].Token
+					}
+					hintChildren := make([]*asts.ASTNode, len(prod.childIndices))
+					for i, ci := range prod.childIndices {
+						hintChildren[i] = rhsNodes[ci]
+					}
+					node = asts.NewASTNode(parentToken, nodeType, hintChildren)
+				} else if prod.rhsCount == 1 {
+					node = rhsNodes[0]
+				} else if prod.rhsCount == 0 {
+					node = asts.NewASTNode(nil, prod.lhs, []*asts.ASTNode{})
+				} else {
+					node = asts.NewASTNode(nil, prod.lhs, rhsNodes)
+				}
+				nodeStack = append(nodeStack, node)
+			}
+			state = stateStack[len(stateStack)-1]
+			nextState, ok := MyParserGotos[state][prod.lhs]
+			if !ok {
+				return nil, false, fmt.Errorf("parse error: missing goto for %s", prod.lhs)
+			}
+			stateStack = append(stateStack, nextState)
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+		case MyParserActionAccept:
+			if len(nodeStack) != 1 {
+				return nil, false, fmt.Errorf("parse error: unexpected parse stack size %d", len(nodeStack))
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+			if astMode == "noast" {
+				return nil, true, nil
+			}
+			return asts.NewAST(nodeStack[0]), true, nil
+		case MyParserActionAcceptAndYield:
+			if len(nodeStack) != 1 {
+				return nil, false, fmt.Errorf("parse error: unexpected parse stack size %d", len(nodeStack))
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+			parser.stashedLookahead = lookahead
+			if astMode == "noast" {
+				return nil, false, nil
+			}
+			return asts.NewAST(nodeStack[0]), false, nil
+		default:
+			return nil, false, fmt.Errorf("parse error: no action")
 		}
 	}
 }
@@ -241,6 +445,7 @@ const (
 	MyParserActionShift MyParserActionKind = iota
 	MyParserActionReduce
 	MyParserActionAccept
+	MyParserActionAcceptAndYield
 )
 
 type MyParserAction struct {
@@ -298,6 +503,8 @@ func formatMyParserAction(action MyParserAction) string {
 		return fmt.Sprintf("reduce(%d)", action.Target)
 	case MyParserActionAccept:
 		return "accept"
+	case MyParserActionAcceptAndYield:
+		return "accept_and_yield"
 	default:
 		return "unknown"
 	}
@@ -333,19 +540,62 @@ var MyParserActions = map[int]map[tokens.TokenType]MyParserAction{
 		tokens.TokenType("true"):     {Kind: MyParserActionShift, Target: 11},
 	},
 	1: {
-		tokens.TokenTypeEOF: {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenTypeEOF:          {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 3},
 	},
 	2: {
-		tokens.TokenTypeEOF: {Kind: MyParserActionAccept},
+		tokens.TokenTypeEOF:          {Kind: MyParserActionAccept},
+		tokens.TokenType("colon"):    {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("comma"):    {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("false"):    {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("null"):     {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("number"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("rbracket"): {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("string"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("true"):     {Kind: MyParserActionAcceptAndYield},
 	},
 	3: {
-		tokens.TokenTypeEOF: {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenTypeEOF:          {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 2},
 	},
 	4: {
-		tokens.TokenTypeEOF: {Kind: MyParserActionReduce, Target: 1},
+		tokens.TokenTypeEOF:          {Kind: MyParserActionReduce, Target: 1},
+		tokens.TokenType("colon"):    {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("comma"):    {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("false"):    {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("null"):     {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("number"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("rbracket"): {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("string"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("true"):     {Kind: MyParserActionAcceptAndYield},
 	},
 	5: {
-		tokens.TokenTypeEOF: {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenTypeEOF:          {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 7},
 	},
 	6: {
 		tokens.TokenType("false"):    {Kind: MyParserActionShift, Target: 16},
@@ -358,32 +608,80 @@ var MyParserActions = map[int]map[tokens.TokenType]MyParserAction{
 		tokens.TokenType("true"):     {Kind: MyParserActionShift, Target: 23},
 	},
 	7: {
-		tokens.TokenType("rcurly"): {Kind: MyParserActionShift, Target: 26},
-		tokens.TokenType("string"): {Kind: MyParserActionShift, Target: 27},
+		tokens.TokenType("false"):    {Kind: MyParserActionShift, Target: 30},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionShift, Target: 31},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionShift, Target: 32},
+		tokens.TokenType("null"):     {Kind: MyParserActionShift, Target: 33},
+		tokens.TokenType("number"):   {Kind: MyParserActionShift, Target: 34},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionShift, Target: 35},
+		tokens.TokenType("string"):   {Kind: MyParserActionShift, Target: 36},
+		tokens.TokenType("true"):     {Kind: MyParserActionShift, Target: 37},
 	},
 	8: {
-		tokens.TokenTypeEOF: {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenTypeEOF:          {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 8},
 	},
 	9: {
-		tokens.TokenTypeEOF: {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenTypeEOF:          {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 5},
 	},
 	10: {
-		tokens.TokenTypeEOF: {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenTypeEOF:          {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 4},
 	},
 	11: {
-		tokens.TokenTypeEOF: {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenTypeEOF:          {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 6},
 	},
 	12: {
 		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 3},
 		tokens.TokenType("rbracket"): {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 3},
 	},
 	13: {
-		tokens.TokenType("comma"):    {Kind: MyParserActionShift, Target: 28},
-		tokens.TokenType("rbracket"): {Kind: MyParserActionShift, Target: 29},
+		tokens.TokenType("comma"):    {Kind: MyParserActionShift, Target: 38},
+		tokens.TokenType("rbracket"): {Kind: MyParserActionShift, Target: 39},
 	},
 	14: {
 		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 2},
 		tokens.TokenType("rbracket"): {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 2},
 	},
 	15: {
 		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 16},
@@ -391,7 +689,14 @@ var MyParserActions = map[int]map[tokens.TokenType]MyParserAction{
 	},
 	16: {
 		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 7},
 		tokens.TokenType("rbracket"): {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 7},
 	},
 	17: {
 		tokens.TokenType("false"):    {Kind: MyParserActionShift, Target: 16},
@@ -399,48 +704,198 @@ var MyParserActions = map[int]map[tokens.TokenType]MyParserAction{
 		tokens.TokenType("lcurly"):   {Kind: MyParserActionShift, Target: 18},
 		tokens.TokenType("null"):     {Kind: MyParserActionShift, Target: 19},
 		tokens.TokenType("number"):   {Kind: MyParserActionShift, Target: 20},
-		tokens.TokenType("rbracket"): {Kind: MyParserActionShift, Target: 31},
+		tokens.TokenType("rbracket"): {Kind: MyParserActionShift, Target: 41},
 		tokens.TokenType("string"):   {Kind: MyParserActionShift, Target: 22},
 		tokens.TokenType("true"):     {Kind: MyParserActionShift, Target: 23},
 	},
 	18: {
-		tokens.TokenType("rcurly"): {Kind: MyParserActionShift, Target: 33},
-		tokens.TokenType("string"): {Kind: MyParserActionShift, Target: 27},
+		tokens.TokenType("rcurly"): {Kind: MyParserActionShift, Target: 43},
+		tokens.TokenType("string"): {Kind: MyParserActionShift, Target: 44},
 	},
 	19: {
 		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 8},
 		tokens.TokenType("rbracket"): {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 8},
 	},
 	20: {
 		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 5},
 		tokens.TokenType("rbracket"): {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 5},
 	},
 	21: {
-		tokens.TokenTypeEOF: {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenTypeEOF:          {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 14},
 	},
 	22: {
 		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 4},
 		tokens.TokenType("rbracket"): {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 4},
 	},
 	23: {
 		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 6},
 		tokens.TokenType("rbracket"): {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 6},
 	},
 	24: {
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 3},
+	},
+	25: {
+		tokens.TokenType("colon"):    {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("comma"):    {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("false"):    {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("null"):     {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("number"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("rbracket"): {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 0},
+		tokens.TokenType("string"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("true"):     {Kind: MyParserActionAcceptAndYield},
+	},
+	26: {
 		tokens.TokenType("comma"):  {Kind: MyParserActionReduce, Target: 11},
 		tokens.TokenType("rcurly"): {Kind: MyParserActionReduce, Target: 11},
 	},
-	25: {
-		tokens.TokenType("comma"):  {Kind: MyParserActionShift, Target: 34},
-		tokens.TokenType("rcurly"): {Kind: MyParserActionShift, Target: 35},
-	},
-	26: {
-		tokens.TokenTypeEOF: {Kind: MyParserActionReduce, Target: 9},
-	},
 	27: {
-		tokens.TokenType("colon"): {Kind: MyParserActionShift, Target: 36},
+		tokens.TokenType("comma"):  {Kind: MyParserActionShift, Target: 45},
+		tokens.TokenType("rcurly"): {Kind: MyParserActionShift, Target: 46},
 	},
 	28: {
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 2},
+	},
+	29: {
+		tokens.TokenType("colon"):    {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("comma"):    {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("false"):    {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("null"):     {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("number"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("rbracket"): {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("string"):   {Kind: MyParserActionAcceptAndYield},
+		tokens.TokenType("true"):     {Kind: MyParserActionAcceptAndYield},
+	},
+	30: {
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 7},
+	},
+	31: {
+		tokens.TokenType("false"):    {Kind: MyParserActionShift, Target: 16},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionShift, Target: 17},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionShift, Target: 18},
+		tokens.TokenType("null"):     {Kind: MyParserActionShift, Target: 19},
+		tokens.TokenType("number"):   {Kind: MyParserActionShift, Target: 20},
+		tokens.TokenType("rbracket"): {Kind: MyParserActionShift, Target: 48},
+		tokens.TokenType("string"):   {Kind: MyParserActionShift, Target: 22},
+		tokens.TokenType("true"):     {Kind: MyParserActionShift, Target: 23},
+	},
+	32: {
+		tokens.TokenType("rcurly"): {Kind: MyParserActionShift, Target: 50},
+		tokens.TokenType("string"): {Kind: MyParserActionShift, Target: 44},
+	},
+	33: {
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 8},
+	},
+	34: {
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 5},
+	},
+	35: {
+		tokens.TokenTypeEOF:          {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 9},
+	},
+	36: {
+		tokens.TokenType("colon"):    {Kind: MyParserActionShift, Target: 51},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 4},
+	},
+	37: {
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 6},
+	},
+	38: {
 		tokens.TokenType("false"):    {Kind: MyParserActionShift, Target: 16},
 		tokens.TokenType("lbracket"): {Kind: MyParserActionShift, Target: 17},
 		tokens.TokenType("lcurly"):   {Kind: MyParserActionShift, Target: 18},
@@ -449,125 +904,295 @@ var MyParserActions = map[int]map[tokens.TokenType]MyParserAction{
 		tokens.TokenType("string"):   {Kind: MyParserActionShift, Target: 22},
 		tokens.TokenType("true"):     {Kind: MyParserActionShift, Target: 23},
 	},
-	29: {
-		tokens.TokenTypeEOF: {Kind: MyParserActionReduce, Target: 15},
+	39: {
+		tokens.TokenTypeEOF:          {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 15},
 	},
-	30: {
-		tokens.TokenType("comma"):    {Kind: MyParserActionShift, Target: 28},
-		tokens.TokenType("rbracket"): {Kind: MyParserActionShift, Target: 38},
+	40: {
+		tokens.TokenType("comma"):    {Kind: MyParserActionShift, Target: 38},
+		tokens.TokenType("rbracket"): {Kind: MyParserActionShift, Target: 53},
 	},
-	31: {
+	41: {
 		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 14},
 		tokens.TokenType("rbracket"): {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 14},
 	},
-	32: {
-		tokens.TokenType("comma"):  {Kind: MyParserActionShift, Target: 34},
-		tokens.TokenType("rcurly"): {Kind: MyParserActionShift, Target: 39},
+	42: {
+		tokens.TokenType("comma"):  {Kind: MyParserActionShift, Target: 45},
+		tokens.TokenType("rcurly"): {Kind: MyParserActionShift, Target: 54},
 	},
-	33: {
+	43: {
 		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 9},
 		tokens.TokenType("rbracket"): {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 9},
 	},
-	34: {
-		tokens.TokenType("string"): {Kind: MyParserActionShift, Target: 27},
+	44: {
+		tokens.TokenType("colon"): {Kind: MyParserActionShift, Target: 51},
 	},
-	35: {
-		tokens.TokenTypeEOF: {Kind: MyParserActionReduce, Target: 10},
+	45: {
+		tokens.TokenType("string"): {Kind: MyParserActionShift, Target: 44},
 	},
-	36: {
-		tokens.TokenType("false"):    {Kind: MyParserActionShift, Target: 44},
-		tokens.TokenType("lbracket"): {Kind: MyParserActionShift, Target: 45},
-		tokens.TokenType("lcurly"):   {Kind: MyParserActionShift, Target: 46},
-		tokens.TokenType("null"):     {Kind: MyParserActionShift, Target: 47},
-		tokens.TokenType("number"):   {Kind: MyParserActionShift, Target: 48},
-		tokens.TokenType("string"):   {Kind: MyParserActionShift, Target: 49},
-		tokens.TokenType("true"):     {Kind: MyParserActionShift, Target: 50},
+	46: {
+		tokens.TokenTypeEOF:          {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 10},
 	},
-	37: {
+	47: {
+		tokens.TokenType("comma"):    {Kind: MyParserActionShift, Target: 38},
+		tokens.TokenType("rbracket"): {Kind: MyParserActionShift, Target: 56},
+	},
+	48: {
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 14},
+	},
+	49: {
+		tokens.TokenType("comma"):  {Kind: MyParserActionShift, Target: 45},
+		tokens.TokenType("rcurly"): {Kind: MyParserActionShift, Target: 57},
+	},
+	50: {
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 9},
+	},
+	51: {
+		tokens.TokenType("false"):    {Kind: MyParserActionShift, Target: 61},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionShift, Target: 62},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionShift, Target: 63},
+		tokens.TokenType("null"):     {Kind: MyParserActionShift, Target: 64},
+		tokens.TokenType("number"):   {Kind: MyParserActionShift, Target: 65},
+		tokens.TokenType("string"):   {Kind: MyParserActionShift, Target: 66},
+		tokens.TokenType("true"):     {Kind: MyParserActionShift, Target: 67},
+	},
+	52: {
 		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 17},
 		tokens.TokenType("rbracket"): {Kind: MyParserActionReduce, Target: 17},
 	},
-	38: {
+	53: {
 		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 15},
 		tokens.TokenType("rbracket"): {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 15},
 	},
-	39: {
+	54: {
 		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 10},
 		tokens.TokenType("rbracket"): {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 10},
 	},
-	40: {
+	55: {
 		tokens.TokenType("comma"):  {Kind: MyParserActionReduce, Target: 12},
 		tokens.TokenType("rcurly"): {Kind: MyParserActionReduce, Target: 12},
 	},
-	41: {
-		tokens.TokenType("comma"):  {Kind: MyParserActionReduce, Target: 3},
-		tokens.TokenType("rcurly"): {Kind: MyParserActionReduce, Target: 3},
+	56: {
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 15},
 	},
-	42: {
-		tokens.TokenType("comma"):  {Kind: MyParserActionReduce, Target: 2},
-		tokens.TokenType("rcurly"): {Kind: MyParserActionReduce, Target: 2},
+	57: {
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 10},
 	},
-	43: {
+	58: {
+		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 3},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 3},
+	},
+	59: {
+		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 2},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 2},
+	},
+	60: {
 		tokens.TokenType("comma"):  {Kind: MyParserActionReduce, Target: 13},
 		tokens.TokenType("rcurly"): {Kind: MyParserActionReduce, Target: 13},
 	},
-	44: {
-		tokens.TokenType("comma"):  {Kind: MyParserActionReduce, Target: 7},
-		tokens.TokenType("rcurly"): {Kind: MyParserActionReduce, Target: 7},
+	61: {
+		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 7},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 7},
 	},
-	45: {
+	62: {
 		tokens.TokenType("false"):    {Kind: MyParserActionShift, Target: 16},
 		tokens.TokenType("lbracket"): {Kind: MyParserActionShift, Target: 17},
 		tokens.TokenType("lcurly"):   {Kind: MyParserActionShift, Target: 18},
 		tokens.TokenType("null"):     {Kind: MyParserActionShift, Target: 19},
 		tokens.TokenType("number"):   {Kind: MyParserActionShift, Target: 20},
-		tokens.TokenType("rbracket"): {Kind: MyParserActionShift, Target: 52},
+		tokens.TokenType("rbracket"): {Kind: MyParserActionShift, Target: 69},
 		tokens.TokenType("string"):   {Kind: MyParserActionShift, Target: 22},
 		tokens.TokenType("true"):     {Kind: MyParserActionShift, Target: 23},
 	},
-	46: {
-		tokens.TokenType("rcurly"): {Kind: MyParserActionShift, Target: 54},
-		tokens.TokenType("string"): {Kind: MyParserActionShift, Target: 27},
+	63: {
+		tokens.TokenType("rcurly"): {Kind: MyParserActionShift, Target: 71},
+		tokens.TokenType("string"): {Kind: MyParserActionShift, Target: 44},
 	},
-	47: {
-		tokens.TokenType("comma"):  {Kind: MyParserActionReduce, Target: 8},
-		tokens.TokenType("rcurly"): {Kind: MyParserActionReduce, Target: 8},
+	64: {
+		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 8},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 8},
 	},
-	48: {
-		tokens.TokenType("comma"):  {Kind: MyParserActionReduce, Target: 5},
-		tokens.TokenType("rcurly"): {Kind: MyParserActionReduce, Target: 5},
+	65: {
+		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 5},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 5},
 	},
-	49: {
-		tokens.TokenType("comma"):  {Kind: MyParserActionReduce, Target: 4},
-		tokens.TokenType("rcurly"): {Kind: MyParserActionReduce, Target: 4},
+	66: {
+		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 4},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 4},
 	},
-	50: {
-		tokens.TokenType("comma"):  {Kind: MyParserActionReduce, Target: 6},
-		tokens.TokenType("rcurly"): {Kind: MyParserActionReduce, Target: 6},
+	67: {
+		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 6},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 6},
 	},
-	51: {
-		tokens.TokenType("comma"):    {Kind: MyParserActionShift, Target: 28},
-		tokens.TokenType("rbracket"): {Kind: MyParserActionShift, Target: 55},
+	68: {
+		tokens.TokenType("comma"):    {Kind: MyParserActionShift, Target: 38},
+		tokens.TokenType("rbracket"): {Kind: MyParserActionShift, Target: 72},
 	},
-	52: {
-		tokens.TokenType("comma"):  {Kind: MyParserActionReduce, Target: 14},
-		tokens.TokenType("rcurly"): {Kind: MyParserActionReduce, Target: 14},
+	69: {
+		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 14},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 14},
 	},
-	53: {
-		tokens.TokenType("comma"):  {Kind: MyParserActionShift, Target: 34},
-		tokens.TokenType("rcurly"): {Kind: MyParserActionShift, Target: 56},
+	70: {
+		tokens.TokenType("comma"):  {Kind: MyParserActionShift, Target: 45},
+		tokens.TokenType("rcurly"): {Kind: MyParserActionShift, Target: 73},
 	},
-	54: {
-		tokens.TokenType("comma"):  {Kind: MyParserActionReduce, Target: 9},
-		tokens.TokenType("rcurly"): {Kind: MyParserActionReduce, Target: 9},
+	71: {
+		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 9},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 9},
 	},
-	55: {
-		tokens.TokenType("comma"):  {Kind: MyParserActionReduce, Target: 15},
-		tokens.TokenType("rcurly"): {Kind: MyParserActionReduce, Target: 15},
+	72: {
+		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 15},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 15},
 	},
-	56: {
-		tokens.TokenType("comma"):  {Kind: MyParserActionReduce, Target: 10},
-		tokens.TokenType("rcurly"): {Kind: MyParserActionReduce, Target: 10},
+	73: {
+		tokens.TokenType("comma"):    {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("false"):    {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("lbracket"): {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("lcurly"):   {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("null"):     {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("number"):   {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("rcurly"):   {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("string"):   {Kind: MyParserActionReduce, Target: 10},
+		tokens.TokenType("true"):     {Kind: MyParserActionReduce, Target: 10},
 	},
 }
 
@@ -585,41 +1210,55 @@ var MyParserGotos = map[int]map[asts.NodeType]int{
 		asts.NodeType("Value"):    15,
 	},
 	7: {
-		asts.NodeType("Member"):  24,
-		asts.NodeType("Members"): 25,
+		asts.NodeType("Array"):   24,
+		asts.NodeType("Json"):    25,
+		asts.NodeType("Member"):  26,
+		asts.NodeType("Members"): 27,
+		asts.NodeType("Object"):  28,
+		asts.NodeType("Value"):   29,
 	},
 	17: {
 		asts.NodeType("Array"):    12,
-		asts.NodeType("Elements"): 30,
+		asts.NodeType("Elements"): 40,
 		asts.NodeType("Object"):   14,
 		asts.NodeType("Value"):    15,
 	},
 	18: {
-		asts.NodeType("Member"):  24,
-		asts.NodeType("Members"): 32,
+		asts.NodeType("Member"):  26,
+		asts.NodeType("Members"): 42,
 	},
-	28: {
-		asts.NodeType("Array"):  12,
-		asts.NodeType("Object"): 14,
-		asts.NodeType("Value"):  37,
-	},
-	34: {
-		asts.NodeType("Member"): 40,
-	},
-	36: {
-		asts.NodeType("Array"):  41,
-		asts.NodeType("Object"): 42,
-		asts.NodeType("Value"):  43,
-	},
-	45: {
+	31: {
 		asts.NodeType("Array"):    12,
-		asts.NodeType("Elements"): 51,
+		asts.NodeType("Elements"): 47,
 		asts.NodeType("Object"):   14,
 		asts.NodeType("Value"):    15,
 	},
-	46: {
-		asts.NodeType("Member"):  24,
-		asts.NodeType("Members"): 53,
+	32: {
+		asts.NodeType("Member"):  26,
+		asts.NodeType("Members"): 49,
+	},
+	38: {
+		asts.NodeType("Array"):  12,
+		asts.NodeType("Object"): 14,
+		asts.NodeType("Value"):  52,
+	},
+	45: {
+		asts.NodeType("Member"): 55,
+	},
+	51: {
+		asts.NodeType("Array"):  58,
+		asts.NodeType("Object"): 59,
+		asts.NodeType("Value"):  60,
+	},
+	62: {
+		asts.NodeType("Array"):    12,
+		asts.NodeType("Elements"): 68,
+		asts.NodeType("Object"):   14,
+		asts.NodeType("Value"):    15,
+	},
+	63: {
+		asts.NodeType("Member"):  26,
+		asts.NodeType("Members"): 70,
 	},
 }
 

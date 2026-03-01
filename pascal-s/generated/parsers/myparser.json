@@ -8,8 +8,29 @@
       }
     },
     "1": {
+      ",": {
+        "type": "accept_and_yield"
+      },
+      ";": {
+        "type": "accept_and_yield"
+      },
+      "=": {
+        "type": "accept_and_yield"
+      },
       "EOF": {
         "type": "accept"
+      },
+      "const": {
+        "type": "accept_and_yield"
+      },
+      "constant": {
+        "type": "accept_and_yield"
+      },
+      "identifier": {
+        "type": "accept_and_yield"
+      },
+      "program": {
+        "type": "accept_and_yield"
       }
     },
     "2": {
@@ -19,9 +40,30 @@
       }
     },
     "3": {
+      ",": {
+        "type": "accept_and_yield"
+      },
+      ";": {
+        "type": "accept_and_yield"
+      },
+      "=": {
+        "type": "accept_and_yield"
+      },
       "EOF": {
         "type": "reduce",
         "target": 1
+      },
+      "const": {
+        "type": "accept_and_yield"
+      },
+      "constant": {
+        "type": "accept_and_yield"
+      },
+      "identifier": {
+        "type": "accept_and_yield"
+      },
+      "program": {
+        "type": "accept_and_yield"
       }
     }
   },
