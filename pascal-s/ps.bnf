@@ -4,7 +4,7 @@
 # ================================================================
 # LEXER RULES
 
-# TODO: write up: sharp edge if this isn't first b/c first-found & it matches identifier
+# TODO: Write up: sharp edge if this isn't first b/c first-found & it matches identifier
 program ::= "program";
 
 #relational_op ::= "=" | "<>" | "<" | "<=" | ">=" | ">" ;
@@ -55,8 +55,8 @@ ConstantDef ::= identifier "=" constant ";" ;
 #SimpleType ::= "integer" | "boolean" | "char" | "real" ;
 #ArrayType ::= "array" "[" index-range "]" "of" TypeDenoter ;
 #index-range ::= constant ".." constant ;
-#RecordType ::= "record" field-list "end" ;
-#field-list ::= RecordSection {";" RecordSection} ;
+#RecordType ::= "record" FieldList "end" ;
+#FieldList ::= RecordSection {";" RecordSection} ;
 #RecordSection ::= IdentifierList ":" TypeDenoter ;
 #TypeDenoter ::= identifier | NewType ;
 
