@@ -22,7 +22,7 @@ See each subdirectory's `README.md` for how to run and regenerate.
 When new versions of PGPG are tagged (e.g. `go/v0.2.0`), from the repo root:
 
 ```bash
-go get github.com/johnkerl/pgpg/go@go/v0.2.0
+go get github.com/johnkerl/pgpg/go@v0.2.0
 go mod tidy
 ```
 
