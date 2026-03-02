@@ -13,5 +13,6 @@ tags
 # Built binaries
 /ast-print/ast-print
 /json-stream/json-stream
+/dkvp-stream/dkvp-stream
 /pascal-s/pascal-s
 /pemdas-eval-gen/tryparse

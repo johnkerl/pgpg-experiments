@@ -1,0 +1,25 @@
+# ----------------------------------------------------------------
+# Lexing (no !whitespace: spaces are significant in key/value)
+#
+# comma = 0x2C, equals = 0x3D
+# _text_char = any char except comma and equals
+
+comma  ::= ",";
+equals ::= "=";
+
+_text_char ::= "\u0000"-"\u002B" | "\u002D"-"\u003C" | "\u003E"-"\uFFFF";
+text       ::= _text_char { _text_char };
+
+# ----------------------------------------------------------------
+# Parsing
+
+Record ::= Pairs;
+
+Pairs
+  ::= Pair -> { "parent_literal": "record", "children": [0], "type": "record" }
+  |   Pairs comma Pair -> { "parent": 0, "with_appended_children": [2] };
+
+Pair
+  ::= text equals text -> { "parent": 1, "children": [0, 2], "type": "key_value" }
+  |   text equals      -> { "parent": 0, "children": [0], "type": "key_empty_value" }
+  |   text             -> { "parent": 0, "children": [0], "type": "value_only" };

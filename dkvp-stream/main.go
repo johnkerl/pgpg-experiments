@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/johnkerl/pgpg-experiments/json-stream/generated/lexers"
-	"github.com/johnkerl/pgpg-experiments/json-stream/generated/parsers"
+	"github.com/johnkerl/pgpg-experiments/dkvp-stream/generated/lexers"
+	"github.com/johnkerl/pgpg-experiments/dkvp-stream/generated/parsers"
 )
 
 type traceOptions struct {
@@ -46,7 +46,7 @@ func (l *lineBufReader) Read(p []byte) (n int, err error) {
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s [options] [-e] [-multi] [file ...]\n", os.Args[0])
 	fmt.Fprintf(os.Stderr, "  -e: arguments are expressions to parse (at least one required).\n")
-	fmt.Fprintf(os.Stderr, "  -multi: parse multiple JSON values from one stream (one per line).\n")
+	fmt.Fprintf(os.Stderr, "  -multi: parse multiple records from one stream (one record per line).\n")
 	fmt.Fprintf(os.Stderr, "  Without -e: zero args = read from stdin; one or more = read from those files.\n")
 	flag.PrintDefaults()
 	os.Exit(1)
@@ -63,7 +63,7 @@ func main() {
 	var traceStack bool
 	flag.BoolVar(&printAst, "v", false, "Print AST")
 	flag.BoolVar(&exprMode, "e", false, "Arguments are expressions to parse (at least one required)")
-	flag.BoolVar(&multi, "multi", false, "Parse multiple top-level objects from one stream")
+	flag.BoolVar(&multi, "multi", false, "Parse multiple records from one stream (one per line)")
 	flag.BoolVar(&noast, "noast", false, "Syntax-only: do not build or print AST")
 	flag.BoolVar(&fullast, "fullast", false, "Ignore AST hints and build full parse tree")
 	flag.BoolVar(&traceTokens, "tokens", false, "Print tokens as they're read")
@@ -165,7 +165,8 @@ func runParserOnFiles(filenames []string, opts traceOptions) error {
 	return nil
 }
 
-// runMulti reads input line by line and parses each line as one JSON value (e.g. NDJSON).
+// runMulti reads input line by line and parses each line as one DKVP record
+// (grammar has no newline token; driver splits on newlines).
 func runMulti(r io.Reader, opts traceOptions) error {
 	sc := bufio.NewScanner(r)
 	for sc.Scan() {

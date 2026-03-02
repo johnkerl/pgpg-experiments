@@ -1,0 +1,254 @@
+{
+  "start_symbol": "Record",
+  "actions": {
+    "0": {
+      "text": {
+        "type": "shift",
+        "target": 4
+      }
+    },
+    "1": {
+      "EOF": {
+        "type": "reduce",
+        "target": 2
+      },
+      "comma": {
+        "type": "reduce",
+        "target": 2
+      },
+      "text": {
+        "type": "reduce",
+        "target": 2
+      }
+    },
+    "2": {
+      "EOF": {
+        "type": "reduce",
+        "target": 1
+      },
+      "comma": {
+        "type": "shift",
+        "target": 5
+      },
+      "equals": {
+        "type": "accept_and_yield"
+      },
+      "text": {
+        "type": "accept_and_yield"
+      }
+    },
+    "3": {
+      "EOF": {
+        "type": "accept"
+      },
+      "comma": {
+        "type": "accept_and_yield"
+      },
+      "equals": {
+        "type": "accept_and_yield"
+      },
+      "text": {
+        "type": "accept_and_yield"
+      }
+    },
+    "4": {
+      "EOF": {
+        "type": "reduce",
+        "target": 6
+      },
+      "comma": {
+        "type": "reduce",
+        "target": 6
+      },
+      "equals": {
+        "type": "shift",
+        "target": 6
+      },
+      "text": {
+        "type": "reduce",
+        "target": 6
+      }
+    },
+    "5": {
+      "text": {
+        "type": "shift",
+        "target": 4
+      }
+    },
+    "6": {
+      "EOF": {
+        "type": "reduce",
+        "target": 5
+      },
+      "comma": {
+        "type": "reduce",
+        "target": 5
+      },
+      "text": {
+        "type": "shift",
+        "target": 8
+      }
+    },
+    "7": {
+      "EOF": {
+        "type": "reduce",
+        "target": 3
+      },
+      "comma": {
+        "type": "reduce",
+        "target": 3
+      },
+      "text": {
+        "type": "reduce",
+        "target": 3
+      }
+    },
+    "8": {
+      "EOF": {
+        "type": "reduce",
+        "target": 4
+      },
+      "comma": {
+        "type": "reduce",
+        "target": 4
+      },
+      "text": {
+        "type": "reduce",
+        "target": 4
+      }
+    }
+  },
+  "gotos": {
+    "0": {
+      "Pair": 1,
+      "Pairs": 2,
+      "Record": 3
+    },
+    "5": {
+      "Pair": 7
+    }
+  },
+  "productions": [
+    {
+      "lhs": "__pgpg_start_1",
+      "rhs": [
+        {
+          "name": "Record",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Record",
+      "rhs": [
+        {
+          "name": "Pairs",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Pairs",
+      "rhs": [
+        {
+          "name": "Pair",
+          "terminal": false
+        }
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [
+          0
+        ],
+        "parent_literal": "record",
+        "type": "record"
+      }
+    },
+    {
+      "lhs": "Pairs",
+      "rhs": [
+        {
+          "name": "Pairs",
+          "terminal": false
+        },
+        {
+          "name": "comma",
+          "terminal": true
+        },
+        {
+          "name": "Pair",
+          "terminal": false
+        }
+      ],
+      "hint": {
+        "parent": 0,
+        "children": null,
+        "with_appended_children": [
+          2
+        ]
+      }
+    },
+    {
+      "lhs": "Pair",
+      "rhs": [
+        {
+          "name": "text",
+          "terminal": true
+        },
+        {
+          "name": "equals",
+          "terminal": true
+        },
+        {
+          "name": "text",
+          "terminal": true
+        }
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          2
+        ],
+        "type": "key_value"
+      }
+    },
+    {
+      "lhs": "Pair",
+      "rhs": [
+        {
+          "name": "text",
+          "terminal": true
+        },
+        {
+          "name": "equals",
+          "terminal": true
+        }
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [
+          0
+        ],
+        "type": "key_empty_value"
+      }
+    },
+    {
+      "lhs": "Pair",
+      "rhs": [
+        {
+          "name": "text",
+          "terminal": true
+        }
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [
+          0
+        ],
+        "type": "value_only"
+      }
+    }
+  ],
+  "hint_mode": "hints"
+}

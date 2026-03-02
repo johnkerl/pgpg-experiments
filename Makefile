@@ -1,16 +1,20 @@
 # Top-level Makefile for pgpg-experiments. Run from repo root.
 
-APPS := ast-print json-stream pascal-s pemdas-eval-gen
+APPS := ast-print dkvp-stream json-stream pascal-s pemdas-eval-gen
 
 # Binary paths (app-dir/binary-name)
 ast_print_bin       := ast-print/ast-print
+dkvp_stream_bin     := dkvp-stream/dkvp-stream
 json_stream_bin     := json-stream/json-stream
+json_stream_jsonp   := json-stream/jsonp
 pascal_s_bin        := pascal-s/pascal-s
 pemdas_eval_gen_bin := pemdas-eval-gen/tryparse
 
 BINARIES := \
   $(ast_print_bin) \
+  $(dkvp_stream_bin) \
   $(json_stream_bin) \
+  $(json_stream_jsonp) \
   $(pascal_s_bin) \
   $(pemdas_eval_gen_bin)
 
@@ -23,7 +27,9 @@ generate:
 # Build binaries only (assumes generate has been run).
 binaries:
 	go build -o $(ast_print_bin)       ./ast-print
+	go build -o $(dkvp_stream_bin)     ./dkvp-stream
 	go build -o $(json_stream_bin)     ./json-stream
+	cp $(json_stream_bin) $(json_stream_jsonp)
 	go build -o $(pascal_s_bin)        ./pascal-s
 	go build -o $(pemdas_eval_gen_bin) ./pemdas-eval-gen
 

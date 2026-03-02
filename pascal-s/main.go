@@ -103,7 +103,7 @@ func runParserOnFiles(filenames []string, opts traceOptions) error {
 }
 
 func runParserOnce(input string, opts traceOptions) error {
-	lexer := lexers.NewMyLexer(input)
+	lexer := lexers.NewMyLexerFromString(input)
 	parser := parsers.NewMyParser()
 	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
 	ast, err := parser.Parse(lexer, "")
